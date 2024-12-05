@@ -51,7 +51,7 @@ public class UserService {
             throw new IllegalArgumentException("유저의 정보가 일치하지 않습니다");
         }
 
-        String token = jm.generateJwt(JwtDto.of(user));
+        String token = jm.generateAccessToken(JwtDto.of(user));
         return SignResponseDto.of(token);
     }
 }
