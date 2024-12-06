@@ -1,4 +1,4 @@
-package com.example.javaassignment.token;
+package com.example.javaassignment.service.token;
 
 import com.example.javaassignment.domain.user.constant.UserRole;
 import com.example.javaassignment.domain.user.entity.User;
@@ -31,7 +31,6 @@ public class TokenTest {
     @Test
     public void 악세스_토큰_발행_테스트() {
         String token = jm.generateAccessToken(JwtDto.of(user));
-        System.out.println(token);
         assertNotNull(token);
     }
 
