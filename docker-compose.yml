@@ -12,9 +12,7 @@ services:
 
   server:
     container_name: javaAssignment_server_container
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: nayoun340/java-assignment
     ports:
       - 8080:8080
     depends_on:
