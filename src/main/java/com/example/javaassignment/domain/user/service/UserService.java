@@ -46,6 +46,8 @@ public class UserService {
     public SignResponseDto sign(SignRequestDto dto) {
         User user = userRepository.findByUsername(dto.getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다"));
+        System.out.println(user.getPassword());
+        System.out.println(dto.getPassword());
 
         if (!pe.matches(dto.getPassword(), user.getPassword())) {
             throw new IllegalArgumentException("유저의 정보가 일치하지 않습니다");

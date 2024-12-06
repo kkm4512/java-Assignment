@@ -1,4 +1,4 @@
-package com.example.javaassignment.jwt;
+package com.example.javaassignment.service.jwt;
 
 import com.example.javaassignment.security.JwtManager;
 import org.junit.jupiter.api.*;
