@@ -31,6 +31,7 @@ public class TokenTest {
     @Test
     public void 악세스_토큰_발행_테스트() {
         String token = jm.generateAccessToken(JwtDto.of(user));
+        System.out.println(token);
         assertNotNull(token);
     }
 
@@ -43,13 +44,13 @@ public class TokenTest {
     @Test
     public void 악세스_토큰_검증_테스트() {
         String token = jm.generateAccessToken(JwtDto.of(user));
-        assertDoesNotThrow(() -> jm.validateToken(token));
+        assertDoesNotThrow(() -> jm.verifySignature(token));
     }
 
     @Test
     public void 리프레쉬_토큰_검증_테스트() {
         String token = jm.generateRefreshToken(JwtDto.of(user));
-        assertDoesNotThrow(() -> jm.validateToken(token));
+        assertDoesNotThrow(() -> jm.verifySignature(token));
     }
 
 
