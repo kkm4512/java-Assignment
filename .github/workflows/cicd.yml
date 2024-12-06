@@ -17,15 +17,16 @@ jobs:
           distribution: 'adopt'
           java-version: '17'
 
-      - name: aws docker-compose.yml 설치
+      - name: env 파일 생성
         run: |
-          echo "${{ secrets.SECRET_DOCKER_COMPOSE_YML }}" > docker-compose.yml
+          echo "${{ secrets.SECRET_ENV }}" > .env
         shell: bash
+
 
       - name: aws 배포용 yml 파일 생성
         run: |
-          cd ./src/main/resources 
-          echo "${{ secrets.SECRET_APPLICATION_YML }}" > ./application.yml
+          cd ./ 
+          echo "${{ secrets.SECRET_DOCKER_COMPOSE_YML }}" > ./docker-compose.yml
         shell: bash
 
       - name: MySQL 도커 컨테이너 실행
@@ -38,6 +39,17 @@ jobs:
         run: |
           chmod +x ./gradlew
           ./gradlew build
+
+      - name: aws 배포용 yml 파일 생성
+        run: |
+          cd ./src/main/resources 
+          echo "${{ secrets.SECRET_APPLICATION_YML }}" > ./application.yml
+        shell: bash
+
+      - name: Re - 빌드 및 테스트 코드 돌리는중 ...
+        run: |
+          chmod +x ./gradlew
+          ./gradlew build -x test     
 
       - name: 도커 이미지 빌드 및 푸시
         run: |
