@@ -33,53 +33,35 @@ jobs:
           chmod +x ./gradlew
           ./gradlew build
 
-#      - name: aws 배포용 yml 파일 생성
-#        run: |
-#          cd ./src/main/resources
-#          echo "${{ secrets.APPLICATION_PROD_YML }}" > ./application-prod.yml
-#        shell: bash
-#
-#      - name: aws 배포를 위한 application.yml 의 프로필을 prod로 바꿔주기
-#        run: |
-#          cd ./src/main/resources
-#          echo "${{ secrets.APPLICATION_YML }}" > ./application.yml
-#        shell: bash
-#
-#      - name: 다시 빌드
-#        run: |
-#          chmod +x ./gradlew
-#          ./gradlew clean
-#          ./gradlew build -x test
-#
-#      - name: 도커로 빌드시키고 hub에 올리기
-#        run: |
-#          docker login -u ${{secrets.DOCKER_HUB_ID}} -p ${{secrets.DOCKER_HUB_TOKEN}}
-#          docker build -t ${{secrets.DOCKER_HUB_ID}}/${{secrets.DOCKER_HUB_REPO}} .
-#          docker push ${{secrets.DOCKER_HUB_ID}}/${{secrets.DOCKER_HUB_REPO}}
-#
-#      - name: ec2에 docker-compose.yml 파일 복사시키기
-#        uses: appleboy/scp-action@v0.1.4
-#        with:
-#          host: ${{secrets.AWS_HOST}}
-#          key: ${{secrets.AWS_KEY}}
-#          username: ubuntu
-#          source: ./docker-compose.yml
-#          target: ~/docker-compose.yml
-#
-#      - name: executing remote ssh
-#        uses: appleboy/ssh-action@master
-#        with:
-#          host: ${{secrets.AWS_HOST}}
-#          key: ${{secrets.AWS_KEY}}
-#          username: ubuntu
-#          script: |
-#            sudo systemctl restart docker
-#            docker login -u ${{secrets.DOCKER_HUB_ID}} -p ${{secrets.DOCKER_HUB_TOKEN}}
-#            sudo docker pull ${{secrets.DOCKER_HUB_ID}}/${{secrets.DOCKER_HUB_REPO}}
-#            cd ~/docker-compose.yml
-#            sudo docker-compose down
-#            sudo docker-compose up -d
-#            sudo docker image prune -f
+      - name: 도커로 빌드시키고 hub에 올리기
+        run: |
+          docker login -u ${{secrets.SECRET_DOCKER_ID}} -p ${{secrets.SECRET_DOCKER_TOKEN}}
+          docker build -t ${{secrets.SECRET_DOCKER_ID}}/${{secrets.SECRET_DOCKER_REPO}} .
+          docker push ${{secrets.DOCKER_HUB_ID}}/${{secrets.SECRET_DOCKER_REPO}}
+
+      - name: ec2에 docker-compose.yml 파일 복사시키기
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{secrets.SECRET_AWS_HOST}}
+          key: ${{secrets.SECRET_AWS_KEY}}
+          username: ubuntu
+          source: ${{secrets.SECRET_DOCKER_COMPOSE_YML}}
+          target: ~/docker-compose.yml
+
+      - name: executing remote ssh
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{secrets.SECRET_AWS_HOST}}
+          key: ${{secrets.SECRET_AWS_KEY}}
+          username: ubuntu
+          script: |
+            sudo systemctl restart docker
+            docker login -u ${{secrets.SECRET_DOCKER_ID}} -p ${{secrets.SECRET_DOCKER_TOKEN}}
+            sudo docker pull ${{secrets.SECRET_DOCKER_ID}}/${{secrets.SECRET_DOCKER_REPO}}
+            cd ~/docker-compose.yml
+            sudo docker-compose down
+            sudo docker-compose up -d
+            sudo docker image prune -f
 
       - name: 오류명 상세히 알려줌
         if: failure()
