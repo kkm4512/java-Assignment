@@ -5,7 +5,7 @@ on:
     branches: [ main ]
 
 jobs:
-  cd:
+  cicd:
     runs-on: [ ubuntu-latest ]
     steps:
       - name:  나의 깃헙 코드를 깃헙 액션의 VM에 옮기는 작업 중 ...
