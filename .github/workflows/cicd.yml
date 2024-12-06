@@ -28,52 +28,28 @@ jobs:
           mysql database: ${{secrets.SECRET_DB_NAME}}
           mysql root password: ${{secrets.SECRET_DB_PASSWORD}}
 
-      - name: 빌드 및 테스트 실행
-        run: |
-          chmod +x ./gradlew
-          ./gradlew build
-
       - name: 도커 이미지 빌드 및 푸시
         run: |
           docker login -u ${{secrets.SECRET_DOCKER_ID}} -p ${{secrets.SECRET_DOCKER_TOKEN}}
           docker build -t ${{secrets.SECRET_DOCKER_ID}}/${{secrets.SECRET_DOCKER_REPO}} .
           docker push ${{secrets.SECRET_DOCKER_ID}}/${{secrets.SECRET_DOCKER_REPO}}
 
-      - name: EC2에 jar 파일 복사
+      - name: docker-compose.yml 복사
         uses: appleboy/scp-action@v0.1.4
         with:
           host: ${{secrets.SECRET_AWS_HOST}}
           key: ${{secrets.SECRET_AWS_KEY}}
           username: ubuntu
-          source: ./build/libs/*.jar # jar 파일 경로
-          target: ~/app.jar
+          source: ./docker-compose.yml
+          target: ~/docker-compose.yml
 
-      - name: 실행용 스크립트 작성
-        run: |
-          echo '#!/bin/bash
-          set -e
-          mkdir -p ~/app
-          cd ~/app
-          jar -xf ~/app.jar
-          docker-compose down || true
-          docker-compose up -d
-          docker image prune -f' > deploy.sh
-          chmod +x deploy.sh
-
-      - name: 스크립트 복사 및 원격 실행
-        uses: appleboy/scp-action@v0.1.4
-        with:
-          host: ${{secrets.SECRET_AWS_HOST}}
-          key: ${{secrets.SECRET_AWS_KEY}}
-          username: ubuntu
-          source: ./deploy.sh
-          target: ~/deploy.sh
-
-      - name: 원격 실행
+      - name: Run docker-compose on EC2
         uses: appleboy/ssh-action@master
         with:
           host: ${{secrets.SECRET_AWS_HOST}}
           key: ${{secrets.SECRET_AWS_KEY}}
           username: ubuntu
           script: |
-            bash ~/deploy.sh
+            sudo docker-compose down || true
+            sudo docker-compose up -d
+            sudo docker image prune -f
