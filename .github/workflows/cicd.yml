@@ -28,13 +28,18 @@ jobs:
           mysql database: ${{secrets.SECRET_DB_NAME}}
           mysql root password: ${{secrets.SECRET_DB_PASSWORD}}
 
+      - name: 빌드 및 테스트 코드 돌리는중 ...
+        run: |
+          chmod +x ./gradlew
+          ./gradlew build
+
       - name: 도커 이미지 빌드 및 푸시
         run: |
           docker login -u ${{secrets.SECRET_DOCKER_ID}} -p ${{secrets.SECRET_DOCKER_TOKEN}}
           docker build -t ${{secrets.SECRET_DOCKER_ID}}/${{secrets.SECRET_DOCKER_REPO}} .
           docker push ${{secrets.SECRET_DOCKER_ID}}/${{secrets.SECRET_DOCKER_REPO}}
 
-      - name: docker-compose.yml 복사
+      - name: ec2에 docker-compose.yml 파일 복사시키기
         uses: appleboy/scp-action@v0.1.4
         with:
           host: ${{secrets.SECRET_AWS_HOST}}
