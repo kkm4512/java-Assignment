@@ -22,13 +22,6 @@ jobs:
           echo "${{ secrets.SECRET_ENV }}" > .env
         shell: bash
 
-
-      - name: aws 배포용 yml 파일 생성
-        run: |
-          cd ./ 
-          echo "${{ secrets.SECRET_DOCKER_COMPOSE_YML }}" > ./docker-compose.yml
-        shell: bash
-
       - name: MySQL 도커 컨테이너 실행
         uses: mirromutth/mysql-action@v1.1
         with:
@@ -42,13 +35,20 @@ jobs:
 
       - name: aws 배포용 yml 파일 생성
         run: |
+          cd ./ 
+          echo "${{ secrets.SECRET_DOCKER_COMPOSE_YML }}" > ./docker-compose.yml
+        shell: bash
+
+      - name: aws 배포용 yml 파일 생성
+        run: |
           cd ./src/main/resources 
           echo "${{ secrets.SECRET_APPLICATION_YML }}" > ./application.yml
         shell: bash
 
-      - name: Re - 빌드 및 테스트 코드 돌리는중 ...
+      - name: Re - 빌드 ...
         run: |
           chmod +x ./gradlew
+          ./gradlew clean
           ./gradlew build -x test     
 
       - name: 도커 이미지 빌드 및 푸시
