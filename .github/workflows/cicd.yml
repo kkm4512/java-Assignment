@@ -22,6 +22,12 @@ jobs:
           echo "${{ secrets.SECRET_ENV }}" > .env
         shell: bash
 
+      - name: aws 배포용 yml 파일 생성
+        run: |
+          cd ./ 
+          echo "${{ secrets.SECRET_DOCKER_COMPOSE_YML }}" > ./docker-compose.yml
+        shell: bash
+
       - name: MySQL 도커 컨테이너 실행
         uses: mirromutth/mysql-action@v1.1
         with:
@@ -48,13 +54,17 @@ jobs:
           source: ./docker-compose.yml
           target: ~/docker-compose.yml
 
-      - name: Run docker-compose on EC2
+      - name: executing remote ssh
         uses: appleboy/ssh-action@master
         with:
           host: ${{secrets.SECRET_AWS_HOST}}
           key: ${{secrets.SECRET_AWS_KEY}}
           username: ubuntu
           script: |
-            sudo docker-compose down || true
+            sudo systemctl restart docker
+            docker login -u ${{secrets.DOCKER_HUB_ID}} -p ${{secrets.DOCKER_HUB_TOKEN}}
+            sudo docker pull ${{secrets.DOCKER_HUB_ID}}/${{secrets.DOCKER_HUB_REPO}}            
+            cd ~/docker-compose.yml
+            sudo docker-compose down
             sudo docker-compose up -d
             sudo docker image prune -f
