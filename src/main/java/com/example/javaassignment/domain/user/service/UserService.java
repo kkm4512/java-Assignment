@@ -10,10 +10,12 @@ import com.example.javaassignment.domain.user.repository.UserRepository;
 import com.example.javaassignment.security.JwtDto;
 import com.example.javaassignment.security.JwtManager;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -46,8 +48,8 @@ public class UserService {
     public SignResponseDto sign(SignRequestDto dto) {
         User user = userRepository.findByUsername(dto.getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다"));
-        System.out.println(user.getPassword());
-        System.out.println(dto.getPassword());
+        log.debug(dto.getPassword());
+        log.debug(user.getPassword());
 
         if (!pe.matches(dto.getPassword(), user.getPassword())) {
             throw new IllegalArgumentException("유저의 정보가 일치하지 않습니다");
