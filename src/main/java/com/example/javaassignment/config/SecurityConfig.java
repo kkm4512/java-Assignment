@@ -35,6 +35,7 @@ public class SecurityConfig {
                 .logout(AbstractHttpConfigurer::disable) // Logout 비활성화
                 .authorizeHttpRequests(auth -> auth
                         // cors
+                        .requestMatchers("/swagger-ui/**", "/api-docs/**").permitAll()
                         .requestMatchers("/api/v1/users/**").permitAll()
                         .anyRequest().authenticated()
                 )
