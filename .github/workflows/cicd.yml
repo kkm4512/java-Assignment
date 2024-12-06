@@ -1,5 +1,5 @@
 name: 'CI_CD'
-#
+
 on:
   pull_request:
     branches: [ main ]
@@ -32,6 +32,11 @@ jobs:
         run: |
           chmod +x ./gradlew
           ./gradlew build
+
+      - name: Debug Docker Variables
+        run: |
+          echo "Docker ID: ${{ secrets.SECRET_DOCKER_ID }}"
+          echo "Docker Repo: ${{ secrets.SECRET_DOCKER_REPO }}"
 
       - name: 도커로 빌드시키고 hub에 올리기
         run: |
