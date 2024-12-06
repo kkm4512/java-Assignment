@@ -2,7 +2,9 @@ package com.example.javaassignment.controller;
 
 import com.example.javaassignment.domain.user.dto.request.SignRequestDto;
 import com.example.javaassignment.domain.user.dto.request.SignupRequestDto;
+import com.example.javaassignment.domain.user.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -20,10 +22,23 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 public class UserControllerTest {
 
     @Autowired
-    private MockMvc mockMvc;
+    MockMvc mockMvc;
 
     @Autowired
-    private ObjectMapper objectMapper;
+    UserService userService;
+
+    @Autowired
+    ObjectMapper objectMapper;
+
+    @BeforeEach
+    void init() {
+        SignupRequestDto dto = new SignupRequestDto(
+                "testUserName1",
+                "testPassword1",
+                "testNickname1"
+        );
+        userService.signUp(dto);
+    }
 
     @Test
     public void 회원가입_컨트롤러_테스트() throws Exception {
@@ -42,10 +57,9 @@ public class UserControllerTest {
 
     @Test
     public void 로그인_컨트롤러_테스트() throws Exception {
-        회원가입_컨트롤러_테스트();
         SignRequestDto dto = new SignRequestDto(
-                "testUserName",
-                "testPassword"
+                "testUserName1",
+                "testPassword1"
         );
         String stringDto = objectMapper.writeValueAsString(dto);
         mockMvc.perform(post("/api/v1/users/sign")
