@@ -41,7 +41,7 @@ jobs:
       - name: 도커로 빌드시키고 hub에 올리기
         run: |
           docker login -u ${{secrets.SECRET_DOCKER_ID}} -p ${{secrets.SECRET_DOCKER_TOKEN}}
-          docker build -t ${{secrets.SECRET_DOCKER_ID}}/${{secrets.SECRET_DOCKER_REPO}} .
+          docker build -t nayoun340/java-assignment .
           docker push ${{secrets.DOCKER_HUB_ID}}/${{secrets.SECRET_DOCKER_REPO}}
 
       - name: ec2에 docker-compose.yml 파일 복사시키기
